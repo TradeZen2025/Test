@@ -1,81 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>US Economic Calendar - Today's Events</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .no-events { text-align: center; font-size: 18px; margin: 40px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Economic Calendar</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Optional: Dark mode meta -->
+  <meta name="color-scheme" content="dark light">
 </head>
 <body>
-    <h1>US Economic Events - Today</h1>
-    <div id="date"></div>
-    <table id="calendarTable">
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Event</th>
-                <th>Actual</th>
-                <th>Forecast</th>
-                <th>Previous</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+  <header>
+    <h1>📅 Economic Calendar</h1>
+    <p>High-impact macro events for traders</p>
+  </header>
 
-    <script>
-        const today = new Date();
-        document.getElementById('date').innerText = 'Date: ' + today.toLocaleDateString();
+  <main>
+    <div class="calendar-container">
+      <iframe
+        src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&category=_employment,_economicActivity,_inflation,_credit,_centralBanks,_confidenceIndex,_balance,_Bonds&importance=1,2,3&features=datepicker,timezone&countries=5&calType=week&timeZone=37&lang=1"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+      ></iframe>
+    </div>
+  </main>
 
-        const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-        const apiUrl = 'https://api.tradingeconomics.com/calendar?c=guest:guest';
-
-        fetch(corsProxy + apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.querySelector('#calendarTable tbody');
-                tbody.innerHTML = ''; // Clear
-
-                const todayStr = today.toISOString().split('T')[0];
-
-                const usEvents = data.filter(event => 
-                    event.Country === 'United States' && 
-                    event.Date.startsWith(todayStr)
-                );
-
-                if (usEvents.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="no-events">No US economic events scheduled for today.</td></tr>';
-                    return;
-                }
-
-                usEvents.sort((a, b) => new Date(a.Date) - new Date(b.Date));
-
-                usEvents.forEach(event => {
-                    const eventDate = new Date(event.Date);
-                    const timeStr = eventDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${timeStr}</td>
-                        <td>${event.Event || ''}</td>
-                        <td>${event.Actual || '-'}</td>
-                        <td>${event.Forecast || '-'}</td>
-                        <td>${event.Previous || '-'}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                document.querySelector('#calendarTable tbody').innerHTML = '<tr><td colspan="5">Error loading data. Guest access may be restricted.</td></tr>';
-                console.error('Error:', error);
-            });
-    </script>
-    <p>Note: Requires CORS proxy (may need to enable at https://cors-anywhere.herokuapp.com/). For production, use your own proxy or API key.</p>
+  <footer>
+    <span>
+      Data by
+      <a href="https://www.investing.com/" target="_blank" rel="nofollow">
+        Investing.com
+      </a>
+    </span>
+  </footer>
 </body>
 </html>
